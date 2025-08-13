@@ -132,11 +132,7 @@ A proposta original tinha como objetivo gerenciar um consultório médico, inclu
 
 ## 📫 Contribuindo
 
-1. Fork este repositório
-2. Crie um branch: `git checkout -b minha-feature`
-3. Faça suas alterações e commit: `git commit -m 'Minha nova feature'`
-4. Envie para o branch remoto: `git push origin minha-feature`
-5. Abra um Pull Request
+
 
 ---
 
