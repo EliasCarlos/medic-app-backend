@@ -7,10 +7,6 @@ export class CreateDoctorDto {
 
   @IsString()
   @IsNotEmpty()
-  login: string;
-
-  @IsString()
-  @IsNotEmpty()
   @Length(6, 20)
   password: string;
 

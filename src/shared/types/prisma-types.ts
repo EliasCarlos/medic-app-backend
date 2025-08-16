@@ -6,3 +6,12 @@ export type DoctorSelect = {
   email: string;
   phone: string;
 };
+
+export interface AppointmentEntity {
+  id: string;
+  date: Date;
+  doctorId: string;
+  pacientId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

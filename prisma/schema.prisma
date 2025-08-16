@@ -8,58 +8,54 @@ datasource db {
 }
 
 model Pacient {
-  id        String       @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
   birthDate String
-  email     String  @unique
-  password String
+  email     String   @unique
+  password  String
   phone     String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   appointments Appointment[]
-
 }
 
 model Doctor {
-  id                 String       @id @default(uuid())
-  name               String
-  login              String       @unique
-  password           String
-  medicalSpecialty   String
-  medicalRegistration String      @unique
-  email              String
-  phone              String
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  id                  String   @id @default(uuid())
+  name                String
+  password            String
+  medicalSpecialty    String
+  medicalRegistration String   @unique
+  email               String   @unique
+  phone               String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   appointments Appointment[]
-
-  @@unique([email])
 }
 
 model Appointment {
-  id        String       @id @default(uuid())
+  id        String   @id @default(uuid())
   date      DateTime
   doctorId  String
   pacientId String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  doctor   Doctor   @relation(fields: [doctorId], references: [id])
-  pacient  Pacient  @relation(fields: [pacientId], references: [id])
+  doctor        Doctor         @relation(fields: [doctorId], references: [id])
+  pacient       Pacient        @relation(fields: [pacientId], references: [id])
   prescriptions Prescription[]
 }
 
 model Prescription {
-  id            String      @id @default(uuid())
+  id            String    @id @default(uuid())
   date          DateTime?
   appointmentId String
   medicine      String
   dosage        String
   instructions  String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   file          String?
 
   appointment Appointment @relation(fields: [appointmentId], references: [id])
