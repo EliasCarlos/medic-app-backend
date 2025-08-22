@@ -5,9 +5,10 @@ import { AppConfigModule } from './shared/config/config.module';
 import { PacientModule } from './pacient/pacient.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { PrescriptionModule } from './prescription/prescription.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [AppConfigModule, PrismaModule, DoctorModule, PacientModule, AppointmentModule, PrescriptionModule],
+  imports: [AppConfigModule, PrismaModule, DoctorModule, PacientModule, AppointmentModule, PrescriptionModule, AuthModule],
   controllers: [],
   providers: [],
 })

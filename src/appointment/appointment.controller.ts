@@ -32,7 +32,7 @@ export class AppointmentController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() data: UpdateAppointmentDto) {
-    return this.appointmentService.upatedAppointment(id, data);
+    return this.appointmentService.updateAppointment(id, data);
   }
 
   @Delete(':id')

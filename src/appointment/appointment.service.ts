@@ -53,7 +53,7 @@ export class AppointmentService {
     return new AppointmentResponseDto(appointment);
   }
 
-  async upatedAppointment(
+  async updateAppointment(
     id: string,
     data: UpdateAppointmentDto,
   ): Promise<AppointmentResponseDto> {
