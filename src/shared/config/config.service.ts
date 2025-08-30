@@ -16,4 +16,10 @@ export class EnvService {
   get jwtSecret(): string {
     return this.configService.get<string>('JWT_SECRET', { infer: true })!;
   }
+
+  get jwtRefreshSecret(): string {
+    return this.configService.get<string>('JWT_REFRESHSECRET', {
+      infer: true,
+    })!;
+  }
 }

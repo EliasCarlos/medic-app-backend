@@ -17,6 +17,8 @@ model Pacient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  refreshToken  String?
+
   appointments Appointment[]
 }
 
@@ -30,6 +32,8 @@ model Doctor {
   phone               String
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+
+  refreshToken  String?
 
   appointments Appointment[]
 }

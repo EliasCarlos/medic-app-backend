@@ -44,6 +44,69 @@ export class AuthService {
       role: user.role,
     };
 
-    return { access_token: this.jwtService.sign(payload) };
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    if (user.role === 'doctor') {
+      await this.prisma.doctor.update({
+        where: { id: user.id },
+        data: { refreshToken: hashedRefreshToken },
+      });
+    } else {
+      await this.prisma.pacient.update({
+        where: { id: user.id },
+        data: { refreshToken: hashedRefreshToken },
+      });
+    }
+
+    return { accessToken, refreshToken };
+  }
+
+  async refreshTokens(userId: string, role: UserRole, refreshToken: string) {
+    const user =
+      role === 'doctor'
+        ? await this.prisma.doctor.findUnique({ where: { id: userId } })
+        : await this.prisma.pacient.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new UnauthorizedException('Access Denied');
+    }
+
+    if (!user.refreshToken) {
+      throw new UnauthorizedException('Access Denied');
+    }
+
+    const refreshTokenMatches = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!refreshTokenMatches) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    return this.login({ id: user.id, email: user.email, role });
+  }
+
+  async logout(userId: string, role: UserRole) {
+    if (role === 'doctor') {
+      const updated = await this.prisma.doctor.update({
+        where: { id: userId },
+        data: { refreshToken: null },
+      });
+    } else {
+      const updated = await this.prisma.pacient.update({
+        where: { id: userId },
+        data: { refreshToken: null },
+      });
+    }
+    return { message: 'Logout successful' };
   }
 }
