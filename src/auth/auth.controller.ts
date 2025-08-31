@@ -8,15 +8,17 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService, UserRole } from './auth.service';
+import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtRefreshGuard } from 'src/shared/guards/jwtRefresh.guard';
 import { Response, Request } from 'express';
+import { Public } from 'src/shared/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(

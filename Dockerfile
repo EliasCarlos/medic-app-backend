@@ -9,6 +9,7 @@ RUN yarn install
 COPY . .
 
 RUN yarn prisma generate
+RUN yarn run build
 
 
 EXPOSE 5000

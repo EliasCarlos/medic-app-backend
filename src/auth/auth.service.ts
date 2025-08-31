@@ -2,8 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/shared/database/prisma.service';
-
-export type UserRole = 'doctor' | 'pacient';
+import { UserRole } from 'src/shared/types/userRoles-types';
 
 export interface JwtPayload {
   sub: string;

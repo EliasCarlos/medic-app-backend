@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -17,6 +19,7 @@ export class PacientController {
   constructor(private pacientService: PacientService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async createPacient(
     @Body() data: CreatePacientDto,
   ): Promise<PacientResponseDto> {
@@ -24,16 +27,19 @@ export class PacientController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findAllPacients(): Promise<PacientResponseDto[]> {
     return this.pacientService.findAll();
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   async findPacientById(@Param('id') id: string): Promise<PacientResponseDto> {
     return this.pacientService.findById(id);
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   async updatePacient(
     @Param('id') id: string,
     @Body() data: UpdatePacientDto,
@@ -42,6 +48,7 @@ export class PacientController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async removePacient(@Param('id') id: string): Promise<void> {
     return this.pacientService.removePacient(id);
   }
