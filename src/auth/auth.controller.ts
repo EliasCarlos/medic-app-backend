@@ -13,6 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtRefreshGuard } from 'src/shared/guards/jwtRefresh.guard';
 import { Response, Request } from 'express';
 import { Public } from 'src/shared/decorators/public.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +21,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() data: LoginDto,

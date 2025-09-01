@@ -13,11 +13,13 @@ import { PacientService } from './pacient.service';
 import { CreatePacientDto } from './dto/create-pacient.dto';
 import { PacientResponseDto } from './dto/pacient-response.dto';
 import { UpdatePacientDto } from './dto/update-pacient.dto';
+import { Public } from 'src/shared/decorators/public.decorator';
 
 @Controller('pacient')
 export class PacientController {
   constructor(private pacientService: PacientService) {}
 
+  @Public()
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createPacient(
