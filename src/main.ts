@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './shared/filter/all-exceptions.filter';
 import { EnvService } from './shared/config/config.service';
 import * as cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,16 @@ async function bootstrap() {
     origin: envService.port,
     credentials: true,
   });
+
+  const config = new DocumentBuilder()
+    .setTitle('MedicApp API')
+    .setDescription('')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(envService.port);
 }
