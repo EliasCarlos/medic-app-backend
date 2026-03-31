@@ -22,11 +22,13 @@ import {
   ApiResponse,
   ApiConsumes,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
 
 @ApiTags('Prescriptions')
+@ApiBearerAuth('JWT-auth')
 @Controller('prescription')
 export class PrescriptionController {
   constructor(private prescriptionService: PrescriptionService) {}

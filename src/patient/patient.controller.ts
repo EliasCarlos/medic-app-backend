@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { PatientResponseDto } from './dto/patient-response.dto';
@@ -19,6 +19,7 @@ import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
 
 @ApiTags('Patients')
+@ApiBearerAuth('JWT-auth')
 @Controller('patient')
 export class PatientController {
   constructor(private patientService: PatientService) {}

@@ -16,9 +16,10 @@ import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Doctors')
+@ApiBearerAuth('JWT-auth')
 @Controller('doctor')
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}
