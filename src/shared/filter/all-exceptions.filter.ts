@@ -36,6 +36,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
 
       return response.status(429).json({
+        success: false,
         statusCode: 429,
         message: `Too many login attempts. Please try again in ${waitTime} seconds.`,
         error: 'Too Many Requests',
@@ -48,6 +49,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       if (errorConfig) {
         return response.status(errorConfig.status).json({
+          success: false,
           statusCode: errorConfig.status,
           message: errorConfig.message(exception.meta as any),
           error: 'Database Error',
@@ -56,6 +58,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
 
       return response.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
         statusCode: HttpStatus.BAD_REQUEST,
         message: `Database error (code: ${exception.code})`,
         error: 'Database Error',
@@ -66,6 +69,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof PrismaClientUnknownRequestError) {
       this.logger.error('Unknown error in Prisma', exception.message);
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Internal database error',
         error: 'Database Error',
@@ -91,6 +95,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     return response.status(status).json({
+      success: false,
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,

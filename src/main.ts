@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 import { AllExceptionsFilter } from './shared/filter/all-exceptions.filter';
 import { EnvService } from './shared/config/config.service';
 import * as cookieParser from 'cookie-parser';
@@ -20,9 +21,10 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalInterceptors(new TransformInterceptor());
   app.use(cookieParser());
   app.enableCors({
-    origin: envService.port,
+    origin: true,
     credentials: true,
   });
 
