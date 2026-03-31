@@ -15,6 +15,7 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { PatientResponseDto } from './dto/patient-response.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 
 @ApiTags('Patients')
 @Controller('patient')
@@ -73,9 +74,10 @@ export class PatientController {
   })
   async updatePatient(
     @Param('id') id: string,
+    @ActiveUser() user: any,
     @Body() data: UpdatePatientDto,
   ): Promise<PatientResponseDto> {
-    return this.patientService.updatePatient(id, data);
+    return this.patientService.updatePatient(id, user.id, data);
   }
 
   @Delete(':id')
@@ -86,7 +88,10 @@ export class PatientController {
     description: 'Patient successfully removed',
   })
   @ApiResponse({ status: 404, description: 'Patient not found' })
-  async removePatient(@Param('id') id: string): Promise<void> {
-    return this.patientService.removePatient(id);
+  async removePatient(
+    @Param('id') id: string,
+    @ActiveUser() user: any,
+  ): Promise<void> {
+    return this.patientService.removePatient(id, user.id);
   }
 }
