@@ -1,141 +1,152 @@
 # 🩺 Medi-App Backend
 
-Este repositório contém a implementação do backend do **Medi-App**, um sistema para gerenciamento de consultórios médicos, desenvolvido como parte da disciplina de **Programação II** da Faculdade Descomplica.
+<p align="center">
+  <img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS">
+  <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" alt="Prisma">
+  <img src="https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/docker-%232496ED.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+</p>
 
-O projeto foi reestruturado com foco em boas práticas, utilizando **NestJS**, **Prisma ORM** e **Docker**, com autenticação, validação de dados e tratamento global de erros.
+Este repositório contém o backend do **Medi-App**, um sistema robusto para gerenciamento de consultórios médicos. Desenvolvido com **NestJS**, o projeto foca em escalabilidade, segurança e boas práticas de desenvolvimento.
 
 ---
 
-## 📚 Tecnologias Utilizadas
+## 📑 Sumário
 
-- **[NestJS](https://nestjs.com/)** — Framework Node.js progressivo para construção de APIs escaláveis.
-- **[TypeScript](https://www.typescriptlang.org/)** — Superset do JavaScript com tipagem estática.
-- **[Prisma ORM](https://www.prisma.io/)** — ORM moderno e seguro para manipulação do banco de dados.
-- **[PostgreSQL](https://www.postgresql.org/)** — Banco de dados relacional usado no projeto.
-- **[Docker](https://www.docker.com/)** — Containerização da aplicação e banco de dados.
-- **[Class Validator](https://github.com/typestack/class-validator)** — Validação de dados de entrada via DTOs.
-- **[Bcrypt](https://www.npmjs.com/package/bcrypt)** — Criptografia de senhas.
-- **[Dotenv](https://github.com/motdotla/dotenv)** — Gerenciamento de variáveis de ambiente.
+- [Tecnologias](#-tecnologias)
+- [Funcionalidades](#-funcionalidades)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Configuração](#-configuração)
+- [Como Executar](#-como-executar)
+- [Documentação da API](#-documentação-da-api)
+- [Licença](#-licença)
+
+---
+
+## 🚀 Tecnologias
+
+O projeto foi construído utilizando as seguintes ferramentas:
+
+| Categoria | Tecnologia |
+| :--- | :--- |
+| **Framework** | [NestJS](https://nestjs.com/) |
+| **Linguagem** | [TypeScript](https://www.typescriptlang.org/) |
+| **Banco de Dados** | [PostgreSQL](https://www.postgresql.org/) |
+| **ORM** | [Prisma](https://www.prisma.io/) |
+| **Segurança** | [JWT](https://jwt.io/), [Bcrypt](https://github.com/kelektiv/node.bcrypt.js) |
+| **Infraestrutura** | [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) |
+| **Outros** | [Class-Validator](https://github.com/typestack/class-validator), [Cookie-Parser](https://github.com/expressjs/cookie-parser), [PDFKit](http://pdfkit.org/) |
+
+---
+
+## ✨ Funcionalidades
+
+- 🔐 **Autenticação**: Login seguro para Médicos e Pacientes usando JWT e Refresh Tokens.
+- 👨‍⚕️ **Médicos**: Gerenciamento de perfil, especialidades e agenda.
+- 🤕 **Pacientes**: Cadastro, histórico e agendamentos.
+- 📅 **Agendamentos**: Sistema de marcação de consultas entre médicos e pacientes.
+- 📝 **Prescrições**: Geração de prescrições médicas (com suporte a arquivos/PDF).
+- 🛡️ **Segurança**: Rate-limiting (throttling), validação global de dados e tratamento de erros centralizado.
+- 📋 **Documentação**: API completamente documentada via Swagger.
 
 ---
 
 ## 📂 Estrutura do Projeto
 
 ```bash
-medic-app-backend/
-│   ├── prisma/                # Configuração do schema do Prisma
-│   │   └── schema.prisma
-│   ├── src/
-│   │   ├── appointment/       # Módulo de agendamentos
-│   │   ├── doctor/            # Módulo de médicos
-│   │   ├── patient/           # Módulo de pacientes
-│   │   ├── prescription/      # Módulo de prescrições médicas
-│   │   ├── shared/
-│   │   │   ├── config/        # Configurações gerais
-│   │   │   ├── database/      # Serviço do Prisma e conexões
-│   │   │   ├── filter/        # Filtros globais (tratamento de erros)
-│   │   │   └── types/         # Tipos globais da aplicação
-│   │   ├── app.module.ts      # Módulo raiz
-│   │   └── main.ts            # Ponto de entrada da aplicação
-│   ├── .env                   # Variáveis de ambiente
-│   ├── Dockerfile             # Configuração da imagem Docker
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── README.md              # Este arquivo
+src/
+├── app.module.ts          # Módulo principal
+├── main.ts                # Ponto de entrada (Bootstrap)
+├── auth/                  # Autenticação e Guards
+├── doctor/                # Domínio de Médicos
+├── patient/               # Domínio de Pacientes
+├── appointment/           # Domínio de Agendamentos
+├── prescription/          # Domínio de Prescrições
+└── shared/                # Recursos compartilhados
+    ├── config/            # Configurações de Ambiente
+    ├── database/          # Prisma Service
+    ├── filter/            # Exception Filters
+    ├── guards/            # JWT e RBAC Guards
+    ├── interceptors/      # Transformadores de Resposta
+    └── types/             # Tipos e Interfaces globais
 ```
 
 ---
 
-## 💻 Executando o Projeto
+## 📂 Configuração
 
-### 1️⃣ Pré-requisitos
-
-- Node.js (versão LTS recomendada)
-- Docker e Docker Compose
-- Yarn ou NPM
-- Conta no [Postman](https://www.postman.com/) (opcional para testar as APIs)
-
-### 2️⃣ Passos para execução
+Antes de iniciar, crie um arquivo `.env` na raiz do projeto baseado no `.env_exemple`:
 
 ```bash
-# Clonar o repositório
-git clone https://github.com/EliasCarlos/medic-app-backend.git
-
-# Entrar na pasta do backend
-cd medic-app-backend
-
-# Instalar dependências
-yarn install
-# ou
-npm install
-
-# Subir os containers
-docker-compose up -d
-
-# Rodar as migrations do Prisma
-npx prisma migrate dev --name init
-
-# Iniciar o servidor
-yarn start:dev
+cp .env_exemple .env
 ```
 
-O backend estará disponível em: **http://localhost:5000**
+Preencha as variáveis de ambiente necessárias:
+
+| Variável | Descrição |
+| :--- | :--- |
+| `DATABASE_URL` | URL de conexão com o PostgreSQL |
+| `JWT_SECRET` | Chave secreta para o JWT Token |
+| `JWT_REFRESHSECRET` | Chave secreta para o Refresh Token |
+| `PORT` | Porta em que a aplicação será executada (Padrão: 5000) |
 
 ---
 
-## 📦 Executando com Docker Compose (opcional)
+## ⚙️ Como Executar
 
-Caso queira subir apenas o banco de dados com Docker, crie um arquivo `docker-compose.yml` na raiz do projeto com o conteúdo abaixo:
+### Utilizando Docker (Recomendado)
 
-```yaml
-version: '3.8'
-services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: medic_app
-    ports:
-      - '5432:5432'
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes:
-  pgdata:
-```
-
-Depois, execute:
+1. Certifique-se de que o Docker e Docker Compose estão instalados.
+2. Execute o comando para subir os serviços:
 
 ```bash
 docker-compose up -d
 ```
 
+### Manualmente (Desenvolvimento local)
+
+1. Instale as dependências:
+```bash
+npm install # ou yarn install
+```
+
+2. Certifique-se de que seu banco de dados PostgreSQL está rodando.
+3. Sincronize o schema do Prisma com o banco:
+```bash
+npx prisma migrate dev
+```
+
+4. Inicie o servidor em modo de desenvolvimento:
+```bash
+npm run start:dev
+```
+
 ---
 
-## 🛠 Funcionalidades
+## 📖 Documentação da API
 
-- CRUD completo para **médicos**, **pacientes**, **consultas** e **prescrições**
-- Validação de dados de entrada
-- Criptografia de senhas
-- Tratamento global de erros
-- Integração com banco de dados PostgreSQL via Prisma ORM
-- Containerização com Docker
+A documentação interativa da API (Swagger) pode ser acessada em:
 
----
+👉 **[http://localhost:5000/docs](http://localhost:5000/docs)** (Substitua pela sua porta configurada)
 
-## 📜 Referência ao Projeto Original
-
-Este projeto foi inspirado e reimplementado a partir do **Medi-App** desenvolvido na disciplina de **Programação II** da Faculdade Descomplica.  
-A proposta original tinha como objetivo gerenciar um consultório médico, incluindo médicos, pacientes, consultas e prescrições.
+Lá você encontrará todos os endpoints disponíveis, esquemas de dados e poderá testar as rotas diretamente do navegador.
 
 ---
 
 ## 📫 Contribuindo
 
-
+1. Faça um Fork do projeto.
+2. Crie uma Branch para sua feature (`git checkout -b feature/nova-feature`).
+3. Faça o Commit de suas alterações (`git commit -m 'Adiciona nova feature'`).
+4. Envie para a Branch (`git push origin feature/nova-feature`).
+5. Abra um Pull Request.
 
 ---
 
 ## 📝 Licença
 
-Este projeto é de uso acadêmico e foi criado para fins educacionais.
+Este projeto é destinado a fins educacionais e acadêmicos. Distribuído sob a licença **UNLICENSED**.
+
+---
+<p align="center">Desenvolvido por Elias Carlos</p>
