@@ -1,5 +1,5 @@
 import {
-  ForbiddenException,
+  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -30,7 +30,7 @@ export class PrescriptionService {
     }
 
     if (appointment.doctorId !== userId) {
-      throw new ForbiddenException(
+      throw new BadRequestException(
         'You can only create prescriptions for your own appointments',
       );
     }
@@ -60,7 +60,7 @@ export class PrescriptionService {
     });
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string) {
     const prescription = await this.prisma.prescription.findUnique({
       where: { id },
       select: PRESCRIPTION_SELECT,
@@ -70,26 +70,11 @@ export class PrescriptionService {
       throw new NotFoundException('Prescription not found');
     }
 
-    if (
-      prescription.appointment.doctorId !== userId &&
-      prescription.appointment.patientId !== userId
-    ) {
-      throw new ForbiddenException(
-        'You do not have permission to view this prescription',
-      );
-    }
-
     return prescription;
   }
 
-  async update(id: string, userId: string, data: UpdatePrescriptionDto) {
-    const prescription = await this.findOne(id, userId);
-
-    if (prescription.appointment.doctorId !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to update this prescription',
-      );
-    }
+  async update(id: string, data: UpdatePrescriptionDto) {
+    const prescription = await this.findOne(id);
 
     if (prescription.file) {
       const oldPath = join(process.cwd(), 'uploads', prescription.file);
@@ -111,14 +96,8 @@ export class PrescriptionService {
     });
   }
 
-  async remove(id: string, userId: string) {
-    const prescription = await this.findOne(id, userId);
-
-    if (prescription.appointment.doctorId !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to remove this prescription',
-      );
-    }
+  async remove(id: string) {
+    const prescription = await this.findOne(id);
 
     if (prescription.file) {
       const filePath = join(process.cwd(), 'uploads', prescription.file);
@@ -130,8 +109,8 @@ export class PrescriptionService {
     });
   }
 
-  async download(id: string, userId: string, res: any) {
-    const prescription = await this.findOne(id, userId);
+  async download(id: string, res: any) {
+    const prescription = await this.findOne(id);
 
     if (!prescription || !prescription.file) {
       throw new NotFoundException('File not found');

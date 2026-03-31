@@ -24,6 +24,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
+import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
 
 @ApiTags('Prescriptions')
 @Controller('prescription')
@@ -60,6 +61,7 @@ export class PrescriptionController {
     return this.prescriptionService.findAll(user.id, user.role);
   }
 
+  @IsOwner('id', 'prescription')
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Search for a prescription by ID' })
@@ -69,11 +71,12 @@ export class PrescriptionController {
     description: 'Prescription successfully found',
     type: CreatePrescriptionDto,
   })
-  async findOne(@ActiveUser() user: any, @Param('id') id: string) {
-    return this.prescriptionService.findOne(id, user.id);
+  async findOne(@Param('id') id: string) {
+    return this.prescriptionService.findOne(id);
   }
 
   @Roles('doctor')
+  @IsOwner('id', 'prescription')
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a prescription by ID' })
@@ -83,15 +86,12 @@ export class PrescriptionController {
     description: 'Prescription updated successfully',
     type: UpdatePrescriptionDto,
   })
-  async update(
-    @ActiveUser() user: any,
-    @Param('id') id: string,
-    @Body() data: UpdatePrescriptionDto,
-  ) {
-    return this.prescriptionService.update(id, user.id, data);
+  async update(@Param('id') id: string, @Body() data: UpdatePrescriptionDto) {
+    return this.prescriptionService.update(id, data);
   }
 
   @Roles('doctor')
+  @IsOwner('id', 'prescription')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a prescription by ID' })
@@ -100,10 +100,11 @@ export class PrescriptionController {
     status: 204,
     description: 'Prescription successfully deleted',
   })
-  async remove(@ActiveUser() user: any, @Param('id') id: string) {
-    return this.prescriptionService.remove(id, user.id);
+  async remove(@Param('id') id: string) {
+    return this.prescriptionService.remove(id);
   }
 
+  @IsOwner('id', 'prescription')
   @Get(':id/download')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Download the prescription file in PDF format' })
@@ -112,11 +113,7 @@ export class PrescriptionController {
     status: 200,
     description: 'PDF file returned successfully',
   })
-  async download(
-    @ActiveUser() user: any,
-    @Param('id') id: string,
-    @Res() res: Response,
-  ) {
-    return this.prescriptionService.download(id, user.id, res);
+  async download(@Param('id') id: string, @Res() res: Response) {
+    return this.prescriptionService.download(id, res);
   }
 }

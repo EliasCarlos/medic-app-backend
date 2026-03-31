@@ -15,6 +15,7 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { AppointmentResponseDto } from './dto/appointment-response.dto';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
+import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
 
 @ApiTags('Appointments')
 @Controller('appointment')
@@ -46,6 +47,7 @@ export class AppointmentController {
     return this.appointmentService.findAll(user.id, user.role);
   }
 
+  @IsOwner('id', 'appointment')
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Search appointment by ID' })
@@ -55,10 +57,11 @@ export class AppointmentController {
     type: AppointmentResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  findById(@ActiveUser() user: any, @Param('id') id: string) {
-    return this.appointmentService.findById(id, user.id, user.role);
+  findById(@Param('id') id: string) {
+    return this.appointmentService.findById(id);
   }
 
+  @IsOwner('id', 'appointment')
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update appointment data' })
@@ -69,19 +72,11 @@ export class AppointmentController {
     type: AppointmentResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  update(
-    @ActiveUser() user: any,
-    @Param('id') id: string,
-    @Body() data: UpdateAppointmentDto,
-  ) {
-    return this.appointmentService.updateAppointment(
-      id,
-      user.id,
-      user.role,
-      data,
-    );
+  update(@Param('id') id: string, @Body() data: UpdateAppointmentDto) {
+    return this.appointmentService.updateAppointment(id, data);
   }
 
+  @IsOwner('id', 'appointment')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove appointment by ID' })
@@ -90,7 +85,7 @@ export class AppointmentController {
     description: 'Appointment successfully removed',
   })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  remove(@ActiveUser() user: any, @Param('id') id: string) {
-    return this.appointmentService.remove(id, user.id);
+  remove(@Param('id') id: string) {
+    return this.appointmentService.remove(id);
   }
 }

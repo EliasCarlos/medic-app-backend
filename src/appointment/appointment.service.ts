@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -21,12 +20,12 @@ export class AppointmentService {
     role: UserRole,
   ): Promise<AppointmentResponseDto> {
     if (role === 'doctor' && data.doctorId !== userId) {
-      throw new ForbiddenException(
+      throw new BadRequestException(
         'A doctor can only create appointments for themselves',
       );
     }
     if (role === 'patient' && data.patientId !== userId) {
-      throw new ForbiddenException(
+      throw new BadRequestException(
         'A patient can only create appointments for themselves',
       );
     }
@@ -67,11 +66,7 @@ export class AppointmentService {
     return appointments.map((a) => new AppointmentResponseDto(a));
   }
 
-  async findById(
-    id: string,
-    userId: string,
-    role: UserRole,
-  ): Promise<AppointmentResponseDto> {
+  async findById(id: string): Promise<AppointmentResponseDto> {
     const appointment = await this.prisma.appointment.findUnique({
       where: { id },
       select: APPOINTMENT_SELECT,
@@ -79,12 +74,6 @@ export class AppointmentService {
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
-    }
-
-    if (appointment.doctorId !== userId && appointment.patientId !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to view this appointment',
-      );
     }
 
     return new AppointmentResponseDto(appointment);
@@ -92,17 +81,15 @@ export class AppointmentService {
 
   async updateAppointment(
     id: string,
-    userId: string,
-    role: UserRole,
     data: UpdateAppointmentDto,
   ): Promise<AppointmentResponseDto> {
-    const appointment = await this.findById(id, userId, role);
+    const appointment = await this.findById(id);
 
     const updated = await this.prisma.appointment.update({
       where: { id },
       data: {
         ...data,
-        date: data.date ? new Date(data.date) : appointment.date,
+        date: data.date ? new Date(data.date) : (appointment.date as any),
       },
       select: APPOINTMENT_SELECT,
     });
@@ -110,19 +97,13 @@ export class AppointmentService {
     return new AppointmentResponseDto(updated);
   }
 
-  async remove(id: string, userId: string): Promise<void> {
+  async remove(id: string): Promise<void> {
     const appointment = await this.prisma.appointment.findUnique({
       where: { id },
     });
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
-    }
-
-    if (appointment.doctorId !== userId && appointment.patientId !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to remove this appointment',
-      );
     }
 
     await this.prisma.appointment.delete({ where: { id } });
