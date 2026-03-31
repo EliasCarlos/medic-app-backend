@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/docker-%232496ED.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
 </p>
 
-Este repositório contém o backend do **Medi-App**, um sistema robusto para gerenciamento de consultórios médicos. Desenvolvido com **NestJS**, o projeto foca em escalabilidade, segurança e boas práticas de desenvolvimento.
+Este repositório contém o backend do **Medi-App**, um sistema para gerenciamento de consultórios médicos, desenvolvido originalmente como parte da disciplina de **Programação II** da **Faculdade Descomplica**. O projeto foi reestruturado com foco em escalabilidade, segurança e boas práticas de desenvolvimento utilizando NestJS.
 
 ---
 
@@ -131,6 +131,13 @@ A documentação interativa da API (Swagger) pode ser acessada em:
 👉 **[http://localhost:5000/docs](http://localhost:5000/docs)** (Substitua pela sua porta configurada)
 
 Lá você encontrará todos os endpoints disponíveis, esquemas de dados e poderá testar as rotas diretamente do navegador.
+
+---
+
+## 📜 Referência ao Projeto Original
+
+Este projeto foi inspirado e reimplementado a partir do **Medi-App** desenvolvido na disciplina de **Programação II** da **Faculdade Descomplica**.  
+A proposta original tinha como objetivo gerenciar um consultório médico, incluindo médicos, pacientes, consultas e prescrições.
 
 ---
 
