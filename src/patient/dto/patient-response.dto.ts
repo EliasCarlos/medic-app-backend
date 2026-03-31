@@ -31,6 +31,12 @@ export class PatientResponseDto {
   })
   phone: string;
 
+  @ApiProperty({
+    description: 'User role',
+    example: 'patient',
+  })
+  role: string;
+
   constructor(partial: Partial<PatientResponseDto>) {
     Object.assign(this, partial);
   }

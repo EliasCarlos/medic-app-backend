@@ -5,6 +5,7 @@ export type DoctorSelect = {
   medicalRegistration: string;
   email: string;
   phone: string;
+  role: string;
 };
 
 export interface AppointmentEntity {

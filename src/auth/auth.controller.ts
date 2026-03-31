@@ -43,6 +43,10 @@ export class AuthController {
           type: 'string',
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         },
+        role: {
+          type: 'string',
+          example: 'doctor',
+        },
       },
     },
   })
@@ -55,7 +59,6 @@ export class AuthController {
     const user = await this.authService.validateUser(
       data.email,
       data.password,
-      data.role,
     );
 
     const { accessToken, refreshToken } = await this.authService.login({
@@ -72,7 +75,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { access_token: accessToken };
+    return { access_token: accessToken, role: user.role };
   }
 
   @UseGuards(JwtRefreshGuard)
@@ -94,6 +97,10 @@ export class AuthController {
           type: 'string',
           example: 'dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4...',
         },
+        role: {
+          type: 'string',
+          example: 'doctor',
+        },
       },
     },
   })
@@ -109,7 +116,7 @@ export class AuthController {
       refreshToken,
     );
 
-    return result;
+    return { ...result, role: user.role };
   }
 
   @UseGuards(JwtRefreshGuard)

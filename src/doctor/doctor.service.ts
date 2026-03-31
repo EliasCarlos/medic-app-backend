@@ -40,6 +40,7 @@ export class DoctorService {
         medicalRegistration: true,
         email: true,
         phone: true,
+        role: true,
       },
     });
 
@@ -55,6 +56,7 @@ export class DoctorService {
         medicalRegistration: true,
         email: true,
         phone: true,
+        role: true,
       },
     });
     return doctors.map((doctor) => new DoctorResponseDto(doctor));
@@ -70,6 +72,7 @@ export class DoctorService {
         medicalRegistration: true,
         email: true,
         phone: true,
+        role: true,
       },
     });
 
@@ -86,7 +89,9 @@ export class DoctorService {
     data: UpdateDoctorDto,
   ): Promise<DoctorResponseDto> {
     if (id !== currentUserId) {
-      throw new ForbiddenException('You do not have permission to update this profile');
+      throw new ForbiddenException(
+        'You do not have permission to update this profile',
+      );
     }
 
     const doctor = await this.prisma.doctor.findUnique({
@@ -98,6 +103,7 @@ export class DoctorService {
         medicalRegistration: true,
         email: true,
         phone: true,
+        role: true,
       },
     });
 
@@ -120,6 +126,7 @@ export class DoctorService {
         medicalRegistration: true,
         email: true,
         phone: true,
+        role: true,
       },
     });
 
@@ -128,7 +135,9 @@ export class DoctorService {
 
   async removeDoctor(id: string, currentUserId: string): Promise<void> {
     if (id !== currentUserId) {
-      throw new ForbiddenException('You do not have permission to remove this profile');
+      throw new ForbiddenException(
+        'You do not have permission to remove this profile',
+      );
     }
 
     const doctor = await this.prisma.doctor.findUnique({

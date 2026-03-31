@@ -7,7 +7,7 @@ import { UserRole } from 'src/shared/types/userRoles-types';
 export interface JwtPayload {
   sub: string;
   email: string;
-  role: UserRole;
+  role: string;
 }
 
 @Injectable()
@@ -17,11 +17,21 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
-  async validateUser(email: string, password: string, role: UserRole) {
-    const user =
-      role === 'doctor'
-        ? await this.prisma.doctor.findUnique({ where: { email } })
-        : await this.prisma.patient.findUnique({ where: { email } });
+  async validateUser(email: string, password: string) {
+    // Busca o médico primeiro
+    let user = await this.prisma.doctor.findUnique({ where: { email } });
+    let role: UserRole = 'doctor';
+
+    // Se não encontrar o médico, busca o paciente
+    if (!user) {
+      const patient = await this.prisma.patient.findUnique({
+        where: { email },
+      });
+      if (patient) {
+        user = patient as any;
+        role = 'patient';
+      }
+    }
 
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -33,10 +43,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    return { ...user, role };
+    // Retorna o usuário com o role garantido (seja do banco ou da busca)
+    return { ...user, role: user.role || role };
   }
 
-  async login(user: { id: string; email: string; role: UserRole }) {
+  async login(user: { id: string; email: string; role: string }) {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -91,17 +102,17 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    return this.login({ id: user.id, email: user.email, role });
+    return this.login({ id: user.id, email: user.email, role: user.role });
   }
 
   async logout(userId: string, role: UserRole) {
     if (role === 'doctor') {
-      const updated = await this.prisma.doctor.update({
+      await this.prisma.doctor.update({
         where: { id: userId },
         data: { refreshToken: null },
       });
     } else {
-      const updated = await this.prisma.patient.update({
+      await this.prisma.patient.update({
         where: { id: userId },
         data: { refreshToken: null },
       });
