@@ -1,10 +1,10 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { CreatePacientDto } from './create-pacient.dto';
+import { CreatePatientDto } from './create-patient.dto';
 
-export class UpdatePacientDto extends PartialType(CreatePacientDto) {
+export class UpdatePatientDto extends PartialType(CreatePatientDto) {
   @ApiPropertyOptional({
-    description: 'Pacient name',
+    description: 'Patient name',
     example: 'João da Silva',
   })
   name?: string;
@@ -16,19 +16,19 @@ export class UpdatePacientDto extends PartialType(CreatePacientDto) {
   birthDate?: string;
 
   @ApiPropertyOptional({
-    description: 'Pacient email',
+    description: 'Patient email',
     example: 'joao@email.com',
   })
   email?: string;
 
   @ApiPropertyOptional({
-    description: 'Pacient password',
+    description: 'Patient password',
     example: 'newPassword123',
   })
   password?: string;
 
   @ApiPropertyOptional({
-    description: 'Pacient phone',
+    description: 'Patient phone',
     example: '+55 21 99999-9999',
   })
   phone?: string;

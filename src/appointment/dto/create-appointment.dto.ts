@@ -21,5 +21,5 @@ export class CreateAppointmentDto {
     example: 'p9b55468-9e73-4a06-b25d-199b41420c9f',
   })
   @IsUUID()
-  pacientId: string;
+  patientId: string;
 }

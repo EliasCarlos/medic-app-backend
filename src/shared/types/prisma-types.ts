@@ -11,7 +11,7 @@ export interface AppointmentEntity {
   id: string;
   date: Date;
   doctorId: string;
-  pacientId: string;
+  patientId: string;
   createdAt: Date;
   updatedAt: Date;
 }

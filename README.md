@@ -28,7 +28,7 @@ medic-app-backend/
 │   ├── src/
 │   │   ├── appointment/       # Módulo de agendamentos
 │   │   ├── doctor/            # Módulo de médicos
-│   │   ├── pacient/           # Módulo de pacientes
+│   │   ├── patient/           # Módulo de pacientes
 │   │   ├── prescription/      # Módulo de prescrições médicas
 │   │   ├── shared/
 │   │   │   ├── config/        # Configurações gerais

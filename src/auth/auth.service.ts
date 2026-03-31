@@ -21,7 +21,7 @@ export class AuthService {
     const user =
       role === 'doctor'
         ? await this.prisma.doctor.findUnique({ where: { email } })
-        : await this.prisma.pacient.findUnique({ where: { email } });
+        : await this.prisma.patient.findUnique({ where: { email } });
 
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -59,7 +59,7 @@ export class AuthService {
         data: { refreshToken: hashedRefreshToken },
       });
     } else {
-      await this.prisma.pacient.update({
+      await this.prisma.patient.update({
         where: { id: user.id },
         data: { refreshToken: hashedRefreshToken },
       });
@@ -72,7 +72,7 @@ export class AuthService {
     const user =
       role === 'doctor'
         ? await this.prisma.doctor.findUnique({ where: { id: userId } })
-        : await this.prisma.pacient.findUnique({ where: { id: userId } });
+        : await this.prisma.patient.findUnique({ where: { id: userId } });
 
     if (!user) {
       throw new UnauthorizedException('Access Denied');
@@ -101,7 +101,7 @@ export class AuthService {
         data: { refreshToken: null },
       });
     } else {
-      const updated = await this.prisma.pacient.update({
+      const updated = await this.prisma.patient.update({
         where: { id: userId },
         data: { refreshToken: null },
       });

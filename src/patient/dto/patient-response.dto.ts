@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PacientResponseDto {
+export class PatientResponseDto {
   @ApiProperty({
-    description: 'Unique pacient identifier',
+    description: 'Unique patient identifier',
     example: 'b5b55468-9e73-4a06-b25d-199b41420c9f',
   })
   id: string;
 
   @ApiProperty({
-    description: 'Pacient Full Name',
+    description: 'Patient Full Name',
     example: 'Maria Silva',
   })
   name: string;
@@ -20,18 +20,18 @@ export class PacientResponseDto {
   birthDate: string;
 
   @ApiProperty({
-    description: 'Pacient email',
+    description: 'Patient email',
     example: 'maria@email.com',
   })
   email: string;
 
   @ApiProperty({
-    description: 'Pacient contact telephone number',
+    description: 'Patient contact telephone number',
     example: '+55 11 91234-5678',
   })
   phone: string;
 
-  constructor(partial: Partial<PacientResponseDto>) {
+  constructor(partial: Partial<PatientResponseDto>) {
     Object.assign(this, partial);
   }
 }

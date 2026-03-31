@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Pacient {
+model Patient {
   id        String   @id @default(uuid())
   name      String
   birthDate String
@@ -42,12 +42,12 @@ model Appointment {
   id        String   @id @default(uuid())
   date      DateTime
   doctorId  String
-  pacientId String
+  patientId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   doctor        Doctor         @relation(fields: [doctorId], references: [id])
-  pacient       Pacient        @relation(fields: [pacientId], references: [id])
+  patient       Patient        @relation(fields: [patientId], references: [id])
   prescriptions Prescription[]
 }
 

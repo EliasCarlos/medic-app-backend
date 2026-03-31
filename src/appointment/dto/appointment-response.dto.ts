@@ -24,7 +24,7 @@ export class AppointmentResponseDto {
     description: 'Patient identifier for this appointment',
     example: 'p9b55468-9e73-4a06-b25d-199b41420c9f',
   })
-  pacientId: string;
+  patientId: string;
 
   @ApiProperty({
     description: 'Appointment creation timestamp',
@@ -42,7 +42,7 @@ export class AppointmentResponseDto {
     this.id = appointment.id;
     this.date = appointment.date;
     this.doctorId = appointment.doctorId;
-    this.pacientId = appointment.pacientId;
+    this.patientId = appointment.patientId;
     this.createdAt = appointment.createdAt;
     this.updatedAt = appointment.updatedAt;
   }

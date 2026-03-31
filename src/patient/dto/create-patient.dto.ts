@@ -7,7 +7,7 @@ import {
   Length,
 } from 'class-validator';
 
-export class CreatePacientDto {
+export class CreatePatientDto {
   @ApiProperty({
     example: 'Maria Silva',
     description: 'Full name',
@@ -26,7 +26,7 @@ export class CreatePacientDto {
 
   @ApiProperty({
     example: 'maria.silva@email.com',
-    description: 'Pacient email',
+    description: 'Patient email',
   })
   @IsEmail()
   @IsNotEmpty()
@@ -34,7 +34,7 @@ export class CreatePacientDto {
 
   @ApiProperty({
     example: 'securepassword123',
-    description: 'Pacient password (minimum 6 and maximum 20 characters)',
+    description: 'Patient password (minimum 6 and maximum 20 characters)',
     minLength: 6,
     maxLength: 20,
   })

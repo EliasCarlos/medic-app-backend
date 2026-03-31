@@ -19,5 +19,5 @@ export class UpdateAppointmentDto extends PartialType(CreateAppointmentDto) {
     description: 'Patient identifier for this appointment',
     example: 'p9b55468-9e73-4a06-b25d-199b41420c9f',
   })
-  pacientId?: string;
+  patientId?: string;
 }

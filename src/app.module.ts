@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from './shared/database/prisma.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { AppConfigModule } from './shared/config/config.module';
-import { PacientModule } from './pacient/pacient.module';
+import { PatientModule } from './patient/patient.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { PrescriptionModule } from './prescription/prescription.module';
 import { AuthModule } from './auth/auth.module';
@@ -24,7 +24,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     AppConfigModule,
     PrismaModule,
     DoctorModule,
-    PacientModule,
+    PatientModule,
     AppointmentModule,
     PrescriptionModule,
     AuthModule,

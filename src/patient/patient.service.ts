@@ -4,27 +4,27 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/shared/database/prisma.service';
-import { CreatePacientDto } from './dto/create-pacient.dto';
-import { PacientResponseDto } from './dto/pacient-response.dto';
+import { CreatePatientDto } from './dto/create-patient.dto';
+import { PatientResponseDto } from './dto/patient-response.dto';
 import * as bcrypt from 'bcrypt';
-import { UpdatePacientDto } from './dto/update-pacient.dto';
+import { UpdatePatientDto } from './dto/update-patient.dto';
 
 @Injectable()
-export class PacientService {
+export class PatientService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreatePacientDto): Promise<PacientResponseDto> {
-    const existingPacient = await this.prisma.pacient.findUnique({
+  async create(data: CreatePatientDto): Promise<PatientResponseDto> {
+    const existingPatient = await this.prisma.patient.findUnique({
       where: { email: data.email },
     });
 
-    if (existingPacient) {
-      throw new BadRequestException('Pacient with this email already exists');
+    if (existingPatient) {
+      throw new BadRequestException('Patient with this email already exists');
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const pacient = await this.prisma.pacient.create({
+    const patient = await this.prisma.patient.create({
       data: {
         ...data,
         password: hashedPassword,
@@ -40,11 +40,11 @@ export class PacientService {
       },
     });
 
-    return pacient;
+    return patient;
   }
 
-  async findAll(): Promise<PacientResponseDto[]> {
-    const pacients: PacientResponseDto[] = await this.prisma.pacient.findMany({
+  async findAll(): Promise<PatientResponseDto[]> {
+    const patients: PatientResponseDto[] = await this.prisma.patient.findMany({
       select: {
         id: true,
         name: true,
@@ -56,11 +56,11 @@ export class PacientService {
       },
     });
 
-    return pacients.map((pacient) => new PacientResponseDto(pacient));
+    return patients.map((patient) => new PatientResponseDto(patient));
   }
 
-  async findById(id: string): Promise<PacientResponseDto> {
-    const pacient = await this.prisma.pacient.findUnique({
+  async findById(id: string): Promise<PatientResponseDto> {
+    const patient = await this.prisma.patient.findUnique({
       where: { id },
       select: {
         id: true,
@@ -73,18 +73,18 @@ export class PacientService {
       },
     });
 
-    if (!pacient) {
-      throw new NotFoundException(`Pacient not found`);
+    if (!patient) {
+      throw new NotFoundException(`Patient not found`);
     }
 
-    return new PacientResponseDto(pacient);
+    return new PatientResponseDto(patient);
   }
 
-  async updatePacient(
+  async updatePatient(
     id: string,
-    data: UpdatePacientDto,
-  ): Promise<PacientResponseDto> {
-    const pacient = await this.prisma.pacient.findUnique({
+    data: UpdatePatientDto,
+  ): Promise<PatientResponseDto> {
+    const patient = await this.prisma.patient.findUnique({
       where: { id },
       select: {
         id: true,
@@ -97,8 +97,8 @@ export class PacientService {
       },
     });
 
-    if (!pacient) {
-      throw new NotFoundException(`Pacient not found`);
+    if (!patient) {
+      throw new NotFoundException(`Patient not found`);
     }
 
     if (data.password) {
@@ -106,7 +106,7 @@ export class PacientService {
       data.password = hashedPassword;
     }
 
-    const updatedPacient = await this.prisma.pacient.update({
+    const updatedPatient = await this.prisma.patient.update({
       where: { id },
       data,
       select: {
@@ -120,19 +120,19 @@ export class PacientService {
       },
     });
 
-    return new PacientResponseDto(updatedPacient);
+    return new PatientResponseDto(updatedPatient);
   }
 
-  async removePacient(id: string): Promise<void> {
-    const pacient = await this.prisma.pacient.findUnique({
+  async removePatient(id: string): Promise<void> {
+    const patient = await this.prisma.patient.findUnique({
       where: { id },
     });
 
-    if (!pacient) {
-      throw new NotFoundException(`Pacient not found`);
+    if (!patient) {
+      throw new NotFoundException(`Patient not found`);
     }
 
-    await this.prisma.pacient.delete({
+    await this.prisma.patient.delete({
       where: { id },
     });
   }

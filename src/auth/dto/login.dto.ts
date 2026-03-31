@@ -21,8 +21,8 @@ export class LoginDto {
   @ApiProperty({
     description: 'User role',
     example: 'doctor',
-    enum: ['doctor', 'pacient'],
+    enum: ['doctor', 'patient'],
   })
-  @IsIn(['doctor', 'pacient'])
-  role: 'doctor' | 'pacient';
+  @IsIn(['doctor', 'patient'])
+  role: 'doctor' | 'patient';
 }

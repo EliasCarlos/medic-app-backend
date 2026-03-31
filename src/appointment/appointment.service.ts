@@ -25,7 +25,7 @@ export class AppointmentService {
       data: {
         date: new Date(data.date),
         doctorId: data.doctorId,
-        pacientId: data.pacientId,
+        patientId: data.patientId,
       },
     });
 
