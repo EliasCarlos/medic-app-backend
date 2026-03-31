@@ -38,12 +38,25 @@ export class AppointmentResponseDto {
   })
   updatedAt: Date;
 
-  constructor(appointment: AppointmentEntity) {
+  @ApiProperty({ description: 'Doctor information', required: false })
+  doctor?: { id: string; name: string; medicalSpecialty: string };
+
+  @ApiProperty({ description: 'Patient information', required: false })
+  patient?: { id: string; name: string; email: string };
+
+  constructor(appointment: any) {
     this.id = appointment.id;
     this.date = appointment.date;
     this.doctorId = appointment.doctorId;
     this.patientId = appointment.patientId;
     this.createdAt = appointment.createdAt;
     this.updatedAt = appointment.updatedAt;
+
+    if (appointment.doctor) {
+      this.doctor = appointment.doctor;
+    }
+    if (appointment.patient) {
+      this.patient = appointment.patient;
+    }
   }
 }

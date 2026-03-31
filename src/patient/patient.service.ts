@@ -8,6 +8,7 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { PatientResponseDto } from './dto/patient-response.dto';
 import { HashingService } from 'src/shared/hashing/hashing.service';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { PATIENT_SELECT } from 'src/shared/database/prisma.selects';
 
 @Injectable()
 export class PatientService {
@@ -32,33 +33,15 @@ export class PatientService {
         ...data,
         password: hashedPassword,
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        birthDate: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: PATIENT_SELECT,
     });
 
     return patient;
   }
 
   async findAll(): Promise<PatientResponseDto[]> {
-    const patients: PatientResponseDto[] = await this.prisma.patient.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        birthDate: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+    const patients = await this.prisma.patient.findMany({
+      select: PATIENT_SELECT,
     });
 
     return patients.map((patient) => new PatientResponseDto(patient));
@@ -67,16 +50,7 @@ export class PatientService {
   async findById(id: string): Promise<PatientResponseDto> {
     const patient = await this.prisma.patient.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        birthDate: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: PATIENT_SELECT,
     });
 
     if (!patient) {
@@ -109,16 +83,7 @@ export class PatientService {
     const updatedPatient = await this.prisma.patient.update({
       where: { id },
       data,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        birthDate: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: PATIENT_SELECT,
     });
 
     return new PatientResponseDto(updatedPatient);

@@ -10,6 +10,7 @@ import { join } from 'path';
 import * as PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 import { UserRole } from 'src/shared/types/userRoles-types';
+import { PRESCRIPTION_SELECT } from 'src/shared/database/prisma.selects';
 
 @Injectable()
 export class PrescriptionService {
@@ -45,6 +46,7 @@ export class PrescriptionService {
         file: file ? file.filename : fileName,
         date: data.date ? new Date(data.date) : new Date(),
       },
+      select: PRESCRIPTION_SELECT,
     });
   }
 
@@ -54,14 +56,14 @@ export class PrescriptionService {
         appointment:
           role === 'doctor' ? { doctorId: userId } : { patientId: userId },
       },
-      include: { appointment: true },
+      select: PRESCRIPTION_SELECT,
     });
   }
 
   async findOne(id: string, userId: string) {
     const prescription = await this.prisma.prescription.findUnique({
       where: { id },
-      include: { appointment: true },
+      select: PRESCRIPTION_SELECT,
     });
 
     if (!prescription) {
@@ -105,6 +107,7 @@ export class PrescriptionService {
         file: fileName,
         updatedAt: new Date(),
       },
+      select: PRESCRIPTION_SELECT,
     });
   }
 
@@ -128,22 +131,10 @@ export class PrescriptionService {
   }
 
   async download(id: string, userId: string, res: any) {
-    const prescription = await this.prisma.prescription.findUnique({
-      where: { id },
-      include: { appointment: true },
-    });
+    const prescription = await this.findOne(id, userId);
 
     if (!prescription || !prescription.file) {
-      throw new NotFoundException('File not found in database');
-    }
-
-    if (
-      prescription.appointment.doctorId !== userId &&
-      prescription.appointment.patientId !== userId
-    ) {
-      throw new ForbiddenException(
-        'You do not have permission to download this prescription',
-      );
+      throw new NotFoundException('File not found');
     }
 
     const filePath = join(process.cwd(), 'uploads', prescription.file);

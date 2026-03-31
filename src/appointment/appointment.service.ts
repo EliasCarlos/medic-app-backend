@@ -7,9 +7,9 @@ import {
 import { PrismaService } from 'src/shared/database/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentResponseDto } from './dto/appointment-response.dto';
-import { AppointmentEntity } from 'src/shared/types/prisma-types';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { UserRole } from 'src/shared/types/userRoles-types';
+import { APPOINTMENT_SELECT } from 'src/shared/database/prisma.selects';
 
 @Injectable()
 export class AppointmentService {
@@ -20,7 +20,6 @@ export class AppointmentService {
     userId: string,
     role: UserRole,
   ): Promise<AppointmentResponseDto> {
-    // A doctor can only create appointments for themselves, same for patients
     if (role === 'doctor' && data.doctorId !== userId) {
       throw new ForbiddenException(
         'A doctor can only create appointments for themselves',
@@ -49,18 +48,21 @@ export class AppointmentService {
         doctorId: data.doctorId,
         patientId: data.patientId,
       },
+      select: APPOINTMENT_SELECT,
     });
 
     return new AppointmentResponseDto(appointment);
   }
 
-  async findAll(userId: string, role: UserRole): Promise<AppointmentResponseDto[]> {
-    const appointments: AppointmentEntity[] =
-      await this.prisma.appointment.findMany({
-        where:
-          role === 'doctor' ? { doctorId: userId } : { patientId: userId },
-        orderBy: { date: 'asc' },
-      });
+  async findAll(
+    userId: string,
+    role: UserRole,
+  ): Promise<AppointmentResponseDto[]> {
+    const appointments = await this.prisma.appointment.findMany({
+      where: role === 'doctor' ? { doctorId: userId } : { patientId: userId },
+      orderBy: { date: 'asc' },
+      select: APPOINTMENT_SELECT,
+    });
 
     return appointments.map((a) => new AppointmentResponseDto(a));
   }
@@ -72,6 +74,7 @@ export class AppointmentService {
   ): Promise<AppointmentResponseDto> {
     const appointment = await this.prisma.appointment.findUnique({
       where: { id },
+      select: APPOINTMENT_SELECT,
     });
 
     if (!appointment) {
@@ -93,19 +96,7 @@ export class AppointmentService {
     role: UserRole,
     data: UpdateAppointmentDto,
   ): Promise<AppointmentResponseDto> {
-    const appointment = await this.prisma.appointment.findUnique({
-      where: { id },
-    });
-
-    if (!appointment) {
-      throw new NotFoundException('Appointment not found');
-    }
-
-    if (appointment.doctorId !== userId && appointment.patientId !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to update this appointment',
-      );
-    }
+    const appointment = await this.findById(id, userId, role);
 
     const updated = await this.prisma.appointment.update({
       where: { id },
@@ -113,6 +104,7 @@ export class AppointmentService {
         ...data,
         date: data.date ? new Date(data.date) : appointment.date,
       },
+      select: APPOINTMENT_SELECT,
     });
 
     return new AppointmentResponseDto(updated);

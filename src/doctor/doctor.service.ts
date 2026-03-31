@@ -7,8 +7,8 @@ import { PrismaService } from 'src/shared/database/prisma.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { DoctorResponseDto } from './dto/doctor-response.dto';
 import { HashingService } from 'src/shared/hashing/hashing.service';
-import { DoctorSelect } from 'src/shared/types/prisma-types';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
+import { DOCTOR_SELECT } from 'src/shared/database/prisma.selects';
 
 @Injectable()
 export class DoctorService {
@@ -35,31 +35,15 @@ export class DoctorService {
         ...data,
         password: hashedPassword,
       },
-      select: {
-        id: true,
-        name: true,
-        medicalSpecialty: true,
-        medicalRegistration: true,
-        email: true,
-        phone: true,
-        role: true,
-      },
+      select: DOCTOR_SELECT,
     });
 
     return doctor;
   }
 
   async findAll(): Promise<DoctorResponseDto[]> {
-    const doctors: DoctorSelect[] = await this.prisma.doctor.findMany({
-      select: {
-        id: true,
-        name: true,
-        medicalSpecialty: true,
-        medicalRegistration: true,
-        email: true,
-        phone: true,
-        role: true,
-      },
+    const doctors = await this.prisma.doctor.findMany({
+      select: DOCTOR_SELECT,
     });
     return doctors.map((doctor) => new DoctorResponseDto(doctor));
   }
@@ -67,15 +51,7 @@ export class DoctorService {
   async findById(id: string): Promise<DoctorResponseDto> {
     const doctor = await this.prisma.doctor.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        medicalSpecialty: true,
-        medicalRegistration: true,
-        email: true,
-        phone: true,
-        role: true,
-      },
+      select: DOCTOR_SELECT,
     });
 
     if (!doctor) {
@@ -108,15 +84,7 @@ export class DoctorService {
     const updatedDoctor = await this.prisma.doctor.update({
       where: { id },
       data,
-      select: {
-        id: true,
-        name: true,
-        medicalSpecialty: true,
-        medicalRegistration: true,
-        email: true,
-        phone: true,
-        role: true,
-      },
+      select: DOCTOR_SELECT,
     });
 
     return new DoctorResponseDto(updatedDoctor);
