@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -81,8 +82,13 @@ export class DoctorService {
 
   async updateDoctor(
     id: string,
+    currentUserId: string,
     data: UpdateDoctorDto,
   ): Promise<DoctorResponseDto> {
+    if (id !== currentUserId) {
+      throw new ForbiddenException('You do not have permission to update this profile');
+    }
+
     const doctor = await this.prisma.doctor.findUnique({
       where: { id },
       select: {
@@ -120,7 +126,11 @@ export class DoctorService {
     return new DoctorResponseDto(updatedDoctor);
   }
 
-  async removeDoctor(id: string): Promise<void> {
+  async removeDoctor(id: string, currentUserId: string): Promise<void> {
+    if (id !== currentUserId) {
+      throw new ForbiddenException('You do not have permission to remove this profile');
+    }
+
     const doctor = await this.prisma.doctor.findUnique({
       where: { id },
     });
