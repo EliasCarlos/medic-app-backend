@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/shared/database/prisma.service';
 import { UserRole } from 'src/shared/types/userRoles-types';
+import { HashingService } from 'src/shared/hashing/hashing.service';
 
 export interface JwtPayload {
   sub: string;
@@ -15,6 +15,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private hashingService: HashingService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -37,7 +38,10 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await this.hashingService.compare(
+      password,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
@@ -62,7 +66,7 @@ export class AuthService {
       expiresIn: '7d',
     });
 
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    const hashedRefreshToken = await this.hashingService.hash(refreshToken);
 
     if (user.role === 'doctor') {
       await this.prisma.doctor.update({
@@ -93,7 +97,7 @@ export class AuthService {
       throw new UnauthorizedException('Access Denied');
     }
 
-    const refreshTokenMatches = await bcrypt.compare(
+    const refreshTokenMatches = await this.hashingService.compare(
       refreshToken,
       user.refreshToken,
     );

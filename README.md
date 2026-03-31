@@ -47,7 +47,11 @@ O projeto foi construído utilizando as seguintes ferramentas:
 - 🤕 **Pacientes**: Cadastro, histórico e agendamentos.
 - 📅 **Agendamentos**: Sistema de marcação de consultas entre médicos e pacientes.
 - 📝 **Prescrições**: Geração de prescrições médicas (com suporte a arquivos/PDF).
-- 🛡️ **Segurança**: Rate-limiting (throttling), validação global de dados e tratamento de erros centralizado.
+- 🛡️ **Segurança e Arquitetura**: 
+    - **IsOwnerGuard**: Proteção automática de recursos via decorador `@IsOwner()`, garantindo que usuários só alterem seus próprios dados.
+    - **HashingService**: Centralização de criptografia (bcrypt) para senhas e tokens.
+    - **Rate-limiting**: Throttling configurado para prevenir ataques de força bruta.
+    - Validação global de dados (DTPs) e tratamento de erros centralizado.
 - 📋 **Documentação**: API completamente documentada via Swagger.
 
 ---
@@ -58,7 +62,7 @@ O projeto foi construído utilizando as seguintes ferramentas:
 src/
 ├── app.module.ts          # Módulo principal
 ├── main.ts                # Ponto de entrada (Bootstrap)
-├── auth/                  # Autenticação e Guards
+├── auth/                  # Autenticação e Hashing
 ├── doctor/                # Domínio de Médicos
 ├── patient/               # Domínio de Pacientes
 ├── appointment/           # Domínio de Agendamentos
@@ -66,8 +70,10 @@ src/
 └── shared/                # Recursos compartilhados
     ├── config/            # Configurações de Ambiente
     ├── database/          # Prisma Service
+    ├── decorators/        # Decoradores customizados (Public, IsOwner, ActiveUser)
     ├── filter/            # Exception Filters
-    ├── guards/            # JWT e RBAC Guards
+    ├── guards/            # JWT, RBAC e Ownership Guards
+    ├── hashing/           # Central de Criptografia Baseada em Bcrypt
     ├── interceptors/      # Transformadores de Resposta
     └── types/             # Tipos e Interfaces globais
 ```

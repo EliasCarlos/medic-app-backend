@@ -15,6 +15,7 @@ import { DoctorResponseDto } from './dto/doctor-response.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
+import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Doctors')
@@ -63,6 +64,7 @@ export class DoctorController {
     return this.doctorService.findById(id);
   }
 
+  @IsOwner()
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update doctor data' })
@@ -74,12 +76,12 @@ export class DoctorController {
   })
   async updateDoctor(
     @Param('id') id: string,
-    @ActiveUser() user: any,
     @Body() data: UpdateDoctorDto,
   ): Promise<DoctorResponseDto> {
-    return this.doctorService.updateDoctor(id, user.id, data);
+    return this.doctorService.updateDoctor(id, data);
   }
 
+  @IsOwner()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove doctor by ID' })
@@ -88,10 +90,7 @@ export class DoctorController {
     description: 'Doctor successfully removed',
   })
   @ApiResponse({ status: 404, description: 'Doctor not found' })
-  async removeDoctor(
-    @Param('id') id: string,
-    @ActiveUser() user: any,
-  ): Promise<void> {
-    return this.doctorService.removeDoctor(id, user.id);
+  async removeDoctor(@Param('id') id: string): Promise<void> {
+    return this.doctorService.removeDoctor(id);
   }
 }

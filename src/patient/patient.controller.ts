@@ -16,6 +16,7 @@ import { PatientResponseDto } from './dto/patient-response.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
+import { IsOwner } from 'src/shared/decorators/check-ownership.decorator';
 
 @ApiTags('Patients')
 @Controller('patient')
@@ -63,6 +64,7 @@ export class PatientController {
     return this.patientService.findById(id);
   }
 
+  @IsOwner()
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update patient data' })
@@ -74,12 +76,12 @@ export class PatientController {
   })
   async updatePatient(
     @Param('id') id: string,
-    @ActiveUser() user: any,
     @Body() data: UpdatePatientDto,
   ): Promise<PatientResponseDto> {
-    return this.patientService.updatePatient(id, user.id, data);
+    return this.patientService.updatePatient(id, data);
   }
 
+  @IsOwner()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove patient by ID' })
@@ -88,10 +90,7 @@ export class PatientController {
     description: 'Patient successfully removed',
   })
   @ApiResponse({ status: 404, description: 'Patient not found' })
-  async removePatient(
-    @Param('id') id: string,
-    @ActiveUser() user: any,
-  ): Promise<void> {
-    return this.patientService.removePatient(id, user.id);
+  async removePatient(@Param('id') id: string): Promise<void> {
+    return this.patientService.removePatient(id);
   }
 }

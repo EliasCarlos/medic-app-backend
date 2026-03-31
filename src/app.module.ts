@@ -10,6 +10,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { HashingModule } from './shared/hashing/hashing.module';
+import { IsOwnerGuard } from './shared/guards/is-owner.guard';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     AppointmentModule,
     PrescriptionModule,
     AuthModule,
+    HashingModule,
   ],
   controllers: [],
   providers: [
@@ -42,6 +45,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: IsOwnerGuard,
     },
   ],
 })

@@ -1,18 +1,20 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/shared/database/prisma.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { PatientResponseDto } from './dto/patient-response.dto';
-import * as bcrypt from 'bcrypt';
+import { HashingService } from 'src/shared/hashing/hashing.service';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 
 @Injectable()
 export class PatientService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private hashingService: HashingService,
+  ) {}
 
   async create(data: CreatePatientDto): Promise<PatientResponseDto> {
     const existingPatient = await this.prisma.patient.findUnique({
@@ -23,7 +25,7 @@ export class PatientService {
       throw new BadRequestException('Patient with this email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await this.hashingService.hash(data.password);
 
     const patient = await this.prisma.patient.create({
       data: {
@@ -86,26 +88,12 @@ export class PatientService {
 
   async updatePatient(
     id: string,
-    currentUserId: string,
     data: UpdatePatientDto,
   ): Promise<PatientResponseDto> {
-    if (id !== currentUserId) {
-      throw new ForbiddenException(
-        'You do not have permission to update this profile',
-      );
-    }
-
     const patient = await this.prisma.patient.findUnique({
       where: { id },
       select: {
         id: true,
-        name: true,
-        email: true,
-        phone: true,
-        birthDate: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
@@ -114,7 +102,7 @@ export class PatientService {
     }
 
     if (data.password) {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const hashedPassword = await this.hashingService.hash(data.password);
       data.password = hashedPassword;
     }
 
@@ -136,13 +124,7 @@ export class PatientService {
     return new PatientResponseDto(updatedPatient);
   }
 
-  async removePatient(id: string, currentUserId: string): Promise<void> {
-    if (id !== currentUserId) {
-      throw new ForbiddenException(
-        'You do not have permission to remove this profile',
-      );
-    }
-
+  async removePatient(id: string): Promise<void> {
     const patient = await this.prisma.patient.findUnique({
       where: { id },
     });
