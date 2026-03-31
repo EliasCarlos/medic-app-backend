@@ -14,6 +14,7 @@ import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { AppointmentResponseDto } from './dto/appointment-response.dto';
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 
 @ApiTags('Appointments')
 @Controller('appointment')
@@ -29,8 +30,8 @@ export class AppointmentController {
     description: 'Appointment created successfully',
     type: AppointmentResponseDto,
   })
-  create(@Body() data: CreateAppointmentDto) {
-    return this.appointmentService.create(data);
+  create(@ActiveUser() user: any, @Body() data: CreateAppointmentDto) {
+    return this.appointmentService.create(data, user.id, user.role);
   }
 
   @Get()
@@ -41,8 +42,8 @@ export class AppointmentController {
     description: 'Appointment list returned successfully',
     type: [AppointmentResponseDto],
   })
-  findAll() {
-    return this.appointmentService.findAll();
+  findAll(@ActiveUser() user: any) {
+    return this.appointmentService.findAll(user.id, user.role);
   }
 
   @Get(':id')
@@ -54,8 +55,8 @@ export class AppointmentController {
     type: AppointmentResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  findById(@Param('id') id: string) {
-    return this.appointmentService.findById(id);
+  findById(@ActiveUser() user: any, @Param('id') id: string) {
+    return this.appointmentService.findById(id, user.id, user.role);
   }
 
   @Patch(':id')
@@ -68,8 +69,17 @@ export class AppointmentController {
     type: AppointmentResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  update(@Param('id') id: string, @Body() data: UpdateAppointmentDto) {
-    return this.appointmentService.updateAppointment(id, data);
+  update(
+    @ActiveUser() user: any,
+    @Param('id') id: string,
+    @Body() data: UpdateAppointmentDto,
+  ) {
+    return this.appointmentService.updateAppointment(
+      id,
+      user.id,
+      user.role,
+      data,
+    );
   }
 
   @Delete(':id')
@@ -80,7 +90,7 @@ export class AppointmentController {
     description: 'Appointment successfully removed',
   })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  remove(@Param('id') id: string) {
-    return this.appointmentService.remove(id);
+  remove(@ActiveUser() user: any, @Param('id') id: string) {
+    return this.appointmentService.remove(id, user.id);
   }
 }

@@ -23,6 +23,7 @@ import {
   ApiConsumes,
   ApiParam,
 } from '@nestjs/swagger';
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 
 @ApiTags('Prescriptions')
 @Controller('prescription')
@@ -40,10 +41,11 @@ export class PrescriptionController {
     type: CreatePrescriptionDto,
   })
   async create(
+    @ActiveUser() user: any,
     @Body() data: CreatePrescriptionDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.prescriptionService.create(data, file);
+    return this.prescriptionService.create(data, user.id, file);
   }
 
   @Get()
@@ -54,8 +56,8 @@ export class PrescriptionController {
     description: 'Prescription list returned successfully',
     type: [CreatePrescriptionDto],
   })
-  async findAll() {
-    return this.prescriptionService.findAll();
+  async findAll(@ActiveUser() user: any) {
+    return this.prescriptionService.findAll(user.id, user.role);
   }
 
   @Get(':id')
@@ -67,8 +69,8 @@ export class PrescriptionController {
     description: 'Prescription successfully found',
     type: CreatePrescriptionDto,
   })
-  async findOne(@Param('id') id: string) {
-    return this.prescriptionService.findOne(id);
+  async findOne(@ActiveUser() user: any, @Param('id') id: string) {
+    return this.prescriptionService.findOne(id, user.id);
   }
 
   @Roles('doctor')
@@ -81,8 +83,12 @@ export class PrescriptionController {
     description: 'Prescription updated successfully',
     type: UpdatePrescriptionDto,
   })
-  async update(@Param('id') id: string, @Body() data: UpdatePrescriptionDto) {
-    return this.prescriptionService.update(id, data);
+  async update(
+    @ActiveUser() user: any,
+    @Param('id') id: string,
+    @Body() data: UpdatePrescriptionDto,
+  ) {
+    return this.prescriptionService.update(id, user.id, data);
   }
 
   @Roles('doctor')
@@ -94,8 +100,8 @@ export class PrescriptionController {
     status: 204,
     description: 'Prescription successfully deleted',
   })
-  async remove(@Param('id') id: string) {
-    return this.prescriptionService.remove(id);
+  async remove(@ActiveUser() user: any, @Param('id') id: string) {
+    return this.prescriptionService.remove(id, user.id);
   }
 
   @Get(':id/download')
@@ -106,7 +112,11 @@ export class PrescriptionController {
     status: 200,
     description: 'PDF file returned successfully',
   })
-  async download(@Param('id') id: string, @Res() res: Response) {
-    return this.prescriptionService.download(id, res);
+  async download(
+    @ActiveUser() user: any,
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    return this.prescriptionService.download(id, user.id, res);
   }
 }
