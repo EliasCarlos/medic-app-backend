@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Admin, Doctor, Patient } from '@prisma/client';
 import { PrismaService } from 'src/shared/database/prisma.service';
 import { UserRole } from 'src/shared/types/userRoles-types';
 import { HashingService } from 'src/shared/hashing/hashing.service';
@@ -9,6 +10,8 @@ export interface JwtPayload {
   email: string;
   role: string;
 }
+
+type AuthUser = Admin | Doctor | Patient;
 
 @Injectable()
 export class AuthService {
@@ -20,7 +23,9 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     // Search for admin first
-    let user: any = await this.prisma.admin.findUnique({ where: { email } });
+    let user: AuthUser | null = await this.prisma.admin.findUnique({
+      where: { email },
+    });
     let role: UserRole = 'admin';
 
     // If admin not found, search for doctor
@@ -31,13 +36,10 @@ export class AuthService {
 
     // If doctor not found, search for patient
     if (!user) {
-      const patient = await this.prisma.patient.findUnique({
+      user = await this.prisma.patient.findUnique({
         where: { email },
       });
-      if (patient) {
-        user = patient as any;
-        role = 'patient';
-      }
+      role = 'patient';
     }
 
     if (!user) {
