@@ -19,9 +19,15 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    // Search for doctor first
-    let user = await this.prisma.doctor.findUnique({ where: { email } });
-    let role: UserRole = 'doctor';
+    // Search for admin first
+    let user: any = await this.prisma.admin.findUnique({ where: { email } });
+    let role: UserRole = 'admin';
+
+    // If admin not found, search for doctor
+    if (!user) {
+      user = await this.prisma.doctor.findUnique({ where: { email } });
+      role = 'doctor';
+    }
 
     // If doctor not found, search for patient
     if (!user) {
@@ -68,7 +74,12 @@ export class AuthService {
 
     const hashedRefreshToken = await this.hashingService.hash(refreshToken);
 
-    if (user.role === 'doctor') {
+    if (user.role === 'admin') {
+      await this.prisma.admin.update({
+        where: { id: user.id },
+        data: { refreshToken: hashedRefreshToken },
+      });
+    } else if (user.role === 'doctor') {
       await this.prisma.doctor.update({
         where: { id: user.id },
         data: { refreshToken: hashedRefreshToken },
@@ -85,7 +96,9 @@ export class AuthService {
 
   async refreshTokens(userId: string, role: UserRole, refreshToken: string) {
     const user =
-      role === 'doctor'
+      role === 'admin'
+        ? await this.prisma.admin.findUnique({ where: { id: userId } })
+        : role === 'doctor'
         ? await this.prisma.doctor.findUnique({ where: { id: userId } })
         : await this.prisma.patient.findUnique({ where: { id: userId } });
 
@@ -110,7 +123,12 @@ export class AuthService {
   }
 
   async logout(userId: string, role: UserRole) {
-    if (role === 'doctor') {
+    if (role === 'admin') {
+      await this.prisma.admin.update({
+        where: { id: userId },
+        data: { refreshToken: null },
+      });
+    } else if (role === 'doctor') {
       await this.prisma.doctor.update({
         where: { id: userId },
         data: { refreshToken: null },
@@ -126,7 +144,9 @@ export class AuthService {
 
   async getMe(userId: string, role: string) {
     const user =
-      role === 'doctor'
+      role === 'admin'
+        ? await this.prisma.admin.findUnique({ where: { id: userId } })
+        : role === 'doctor'
         ? await this.prisma.doctor.findUnique({ where: { id: userId } })
         : await this.prisma.patient.findUnique({ where: { id: userId } });
 

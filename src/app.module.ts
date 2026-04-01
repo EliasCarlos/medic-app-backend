@@ -12,6 +12,7 @@ import { RolesGuard } from './shared/guards/roles.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { HashingModule } from './shared/hashing/hashing.module';
 import { IsOwnerGuard } from './shared/guards/is-owner.guard';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { IsOwnerGuard } from './shared/guards/is-owner.guard';
     PrescriptionModule,
     AuthModule,
     HashingModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [

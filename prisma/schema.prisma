@@ -70,3 +70,16 @@ model Prescription {
 
   appointment Appointment @relation(fields: [appointmentId], references: [id])
 }
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  refreshToken  String?
+  role          String   @default("admin")
+}
