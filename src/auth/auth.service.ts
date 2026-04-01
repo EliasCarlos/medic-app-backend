@@ -19,11 +19,11 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    // Busca o médico primeiro
+    // Search for doctor first
     let user = await this.prisma.doctor.findUnique({ where: { email } });
     let role: UserRole = 'doctor';
 
-    // Se não encontrar o médico, busca o paciente
+    // If doctor not found, search for patient
     if (!user) {
       const patient = await this.prisma.patient.findUnique({
         where: { email },
@@ -47,7 +47,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    // Retorna o usuário com o role garantido (seja do banco ou da busca)
+    // Return user with guaranteed role (either from DB or search)
     return { ...user, role: user.role || role };
   }
 
@@ -123,4 +123,23 @@ export class AuthService {
     }
     return { message: 'Logout successful' };
   }
+
+  async getMe(userId: string, role: string) {
+    const user =
+      role === 'doctor'
+        ? await this.prisma.doctor.findUnique({ where: { id: userId } })
+        : await this.prisma.patient.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+  }
 }
+

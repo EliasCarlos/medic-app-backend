@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -14,6 +15,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiCookieAuth,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -21,6 +23,7 @@ import { JwtRefreshGuard } from 'src/shared/guards/jwtRefresh.guard';
 import { Response, Request } from 'express';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { Throttle } from '@nestjs/throttler';
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -145,4 +148,15 @@ export class AuthController {
     res.clearCookie('refresh_token', { path: '/auth' });
     return { message: 'Logout successful' };
   }
+
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiResponse({ status: 200, description: 'Profile returned successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getMe(@ActiveUser() user: { id: string; role: string }) {
+    return this.authService.getMe(user.id, user.role);
+  }
 }
+
